@@ -1,0 +1,80 @@
+;LCD MODULE
+
+;SET DATA POINTER TO NAME STRING
+MOV DPTR,#NAME
+CLR P0.3;ENABLE LCD COMMAND MODE
+
+;FUNCTION SET-Use 2 lines and 5*7 matrix
+MOV P1,#38H             
+SETB P0.2  ;NEGATIVE EDGE
+CALL DELAY
+CLR P0.2 
+
+;Display ON ,Cursor blinking OFF
+MOV P1,#0EH
+SETB P0.2 ;NEGATIVE EDGE
+CALL DELAY
+CLR P0.2 
+
+;Increment cursor    
+MOV P1,#06H
+SETB P0.2  ;NEGATIVE EDGE
+CALL DELAY
+CLR P0.2 
+
+;SHRUTI
+SETB P0.3  ;DATA MODE
+
+CLR A   ;MOV 0 TO ACC
+MOV B, #00H             
+LOOP:
+;LOAD A WITH CHARACTER
+        MOVC A, @A+DPTR     
+        MOV P1, A            
+;NEGATIVE EGDE
+        SETB P0.2   
+        CALL DELAY
+        CLR P0.2
+;INCREMENT B
+        INC B               
+        MOV A, B
+;RUN LOOP 6 TIMES
+        CJNE A, #6, LOOP    
+
+CLR P0.3  ;COMMAND MODE
+
+;Force cursor to the beginning of 2nd line
+MOV P1,#0C0H
+SETB P0.2   ;NEGATIVE EDGE
+CALL DELAY
+CLR P0.2 
+
+;MURARKA
+SETB P0.3  ;DATA MODE
+MOV A, #7                   
+MOV B, #7
+HERE: 
+;LOAD A WITH CHARACTERS FROM M
+        MOVC A, @A+DPTR     
+        MOV P1, A
+;NEGATIVE EDGE
+        SETB P0.2  
+        CALL DELAY
+        CLR P0.2
+;INCREMENT B
+        INC B
+        MOV A, B
+;RUN LOOP HERE 7 TIMES
+        CJNE A, #14, HERE    
+
+JMP LAST
+
+NAME:   ;NAME STRING
+DB "SHRUTI MURARKA"
+
+DELAY:  ;DELAY FUNCTION 
+	MOV R0, #030H
+	DJNZ R0, $
+	RET
+LAST:
+	END

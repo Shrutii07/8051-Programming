@@ -1,0 +1,46 @@
+;SET DATA POINTER TO NAME STRING
+MOV DPTR,#NAME
+
+;SET TIMER 1 IN MODE 2
+;8-bit AUTO RELOAD MODE
+MOV TMOD,#20H
+;FOR BR 4800
+MOV TH1,#0FAH
+;MODE 1 WITH RECEPTION ENABLE
+;8-bit UART communication with variable baud BR
+MOV SCON,#50H
+
+;In case we want to double BR 
+;after Timer 1 exceeds its count FFH
+;Possible way to use higher crystal oscillator
+;rather use PCON(byte addressable)
+    ;MOV A, PCON
+    ;SETB ACC.7
+;SET SMOD = 1 in PCON register 
+    ;MOV PCON, A 
+
+SETB TR1 ;START TIMER 1
+CLR A
+MOV B,#0
+
+AGAIN:
+;LOAD A WITH CHARACTER
+    MOVC A,@A+DPTR
+;LOAD SBUF REGISTER WITH DATA 
+    MOV SBUF,A
+;WAIT TILL COMPLETE TRANSMISSION
+    LOOP:JNB TI,LOOP
+;CLEAR TRANSMIT INTERRUPT FLAG
+    CLR TI
+;INCREMENT B
+    INC B
+    MOV A,B
+;RUN LOOP 14 TIMES
+    CJNE A, #14, AGAIN
+JMP LAST ;END PROGRAM
+
+NAME:  ;NAME STRING
+DB "SHRUTI MURARKA"
+
+LAST:
+	END
