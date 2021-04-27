@@ -1,3 +1,3 @@
 # 8051-Programming
 
-## [Detailed Report](https://www.overleaf.com/read/ynqczwpkxymx)
+## [Report](https://github.com/Shrutii07/8051-Programming/blob/main/8051.pdf)
